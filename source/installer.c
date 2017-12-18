@@ -134,6 +134,7 @@ u32 OpenFirmInstaller(void) {
             statusFirm = STATUS_RED;
             return 1;
         }
+        memcpy(FIRM_BUFFER + 0x100, IS_DEVKIT ? sig_nand_firm_dev : sig_nand_firm_retail, 0x100);
         snprintf(msgFirm, 64, "fastboot3ds firm");
     } else if (firm_id == FIRM_B9S) {
         u8 firm_sha[0x20];
