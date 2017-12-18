@@ -8,8 +8,8 @@
 #define B9S_MAGIC       "B9S"
 #define B9S_OFFSET      (0x40 - strnlen(B9S_MAGIC, 0x10))
 
-#define FB3DS_MAGIC     "FASTBOOT 3DS   "
-#define FB3DS_OFFSET    0x200 // this is not actually used
+#define FB3DS_MAGIC     "fastboot3DS    "
+#define FB3DS_OFFSET    0x200
 
 // see: https://www.3dbrew.org/wiki/FIRM#Firmware_Section_Headers
 typedef struct {
@@ -135,14 +135,7 @@ u32 CheckBoot9Strap(void* firm) {
 }
 
 u32 CheckFastBoot3DS(void* firm) {
-    FirmHeader* header = (FirmHeader*) firm;
-    u32 offset = 0;
-    for (u32 i = 0; (i < 4) && !offset; i++) { // find ARM9 section
-        FirmSectionHeader* section = header->sections + i;
-        if (section->size && (section->type == 0))
-            offset = section->offset;
-    }
-    return (offset && (memcmp(((u8*) firm) + offset, FB3DS_MAGIC, strnlen(FB3DS_MAGIC, 0x10)) == 0)) ? 0 : 1;
+    return (memcmp(((u8*) firm) + FB3DS_OFFSET, FB3DS_MAGIC, sizeof(FB3DS_MAGIC)) == 0) ? 0 : 1;
 }
 
 u32 CheckFirmPayload(void* firm) {
