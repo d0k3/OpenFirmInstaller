@@ -6,6 +6,8 @@
 #include "ui.h"
 #include "qff.h"
 #include "hid.h"
+#include "sighax.h"
+#include "fastboot3DS_pubkey_bin.h"
 
 #define COLOR_STATUS(s) ((s == STATUS_GREEN) ? COLOR_BRIGHTGREEN : (s == STATUS_YELLOW) ? COLOR_BRIGHTYELLOW : (s == STATUS_RED) ? COLOR_RED : COLOR_DARKGREY)
 
@@ -37,7 +39,7 @@ static char msgSector[64]      = "not started";
 static char msgCrypto[64]      = "not started";
 static char msgBackup[64]      = "not started";
 static char msgInstall[64]     = "not started";
-    
+  
 u32 ShowInstallerStatus(void) {
     const u32 pos_xb = 10;
     const u32 pos_x0 = pos_xb + 4;
@@ -124,6 +126,11 @@ u32 OpenFirmInstaller(void) {
     if (firm_id == FIRM_FB3DS) {
         if (ValidateFirm(FIRM_BUFFER, NULL, firm_size, NULL) != 0) {
             snprintf(msgFirm, 64, "invalid FIRM");
+            statusFirm = STATUS_RED;
+            return 1;
+        }
+        if (ValidateFirmSignature(FIRM_BUFFER, fastboot3DS_pubkey_bin) != 0) {
+            snprintf(msgFirm, 64, "signature fail");
             statusFirm = STATUS_RED;
             return 1;
         }

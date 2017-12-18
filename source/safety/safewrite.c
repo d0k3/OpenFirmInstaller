@@ -19,7 +19,7 @@ u32 SafeWriteFile(FIL* file, void* buff, FSIZE_t ofs, UINT btw) {
 }
 
 // safe file quick writer function
-// same as SafeWriteFile(), but also handles filec reate, too, same warnings apply
+// same as SafeWriteFile(), but also handles file create, too, same warnings apply
 u32 SafeQWriteFile(const TCHAR* path, void* buff, UINT btw) {
     FIL fp;
     u32 ret = 0;

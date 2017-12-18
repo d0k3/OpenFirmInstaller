@@ -1,6 +1,7 @@
 #include "validator.h"
 #include "unittype.h"
 #include "sha.h"
+#include "rsa.h"
 
 #define FIRM_MAGIC  'F', 'I', 'R', 'M'
 #define FIRM_MAX_SIZE  0x400000 // 4MB, due to FIRM partition size
@@ -117,6 +118,16 @@ u32 ValidateFirm(void* firm, u8* firm_sha, u32 firm_size, char* output) {
         return 1;
     }
     
+    return 0;
+}
+
+u32 ValidateFirmSignature(void* firm, const u8* pubkey) {
+    u32* hdrdata = (u32*) firm;
+    
+    if (!RSA_setKey2048(3, pubkey, 0x01000100) ||
+        !RSA_verify2048(hdrdata + 0x40, hdrdata, 0x100))
+        return 1;
+        
     return 0;
 }
 
