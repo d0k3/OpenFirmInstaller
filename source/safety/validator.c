@@ -5,11 +5,11 @@
 #define FIRM_MAGIC  'F', 'I', 'R', 'M'
 #define FIRM_MAX_SIZE  0x400000 // 4MB, due to FIRM partition size
 
-#define B9S_MAGIC   "B9S"
-#define B9S_OFFSET  (0x40 - strnlen(B9S_MAGIC, 0x10))
+#define B9S_MAGIC       "B9S"
+#define B9S_OFFSET      (0x40 - strnlen(B9S_MAGIC, 0x10))
 
-#define FB3_MAGIC   "FASTBOOT 3DS   "
-#define FB3_OFFSET  0x200 // this is not actually used
+#define FB3DS_MAGIC     "FASTBOOT 3DS   "
+#define FB3DS_OFFSET    0x200 // this is not actually used
 
 // see: https://www.3dbrew.org/wiki/FIRM#Firmware_Section_Headers
 typedef struct {
@@ -112,7 +112,7 @@ u32 ValidateFirm(void* firm, u8* firm_sha, u32 firm_size, char* output) {
     }
     
     // check provided .SHA
-    if (sha_cmp(firm_sha, firm, firm_size, SHA256_MODE) != 0) {
+    if (firm_sha && (sha_cmp(firm_sha, firm, firm_size, SHA256_MODE) != 0)) {
         if (output) snprintf(output, 64, "SHA hash mismatch");
         return 1;
     }
@@ -142,19 +142,13 @@ u32 CheckFastBoot3DS(void* firm) {
         if (section->size && (section->type == 0))
             offset = section->offset;
     }
-    return (offset && (memcmp(((u8*) firm) + offset, FB3_MAGIC, strnlen(FB3_MAGIC, 0x10)) == 0)) ? 0 : 1;
+    return (offset && (memcmp(((u8*) firm) + offset, FB3DS_MAGIC, strnlen(FB3DS_MAGIC, 0x10)) == 0)) ? 0 : 1;
 }
 
-u32 CheckFirmPayload(void* firm, char* result) {
+u32 CheckFirmPayload(void* firm) {
     if (CheckBoot9Strap(firm) == 0) {
-        if (result) snprintf(result, 32, "boot9strap firm");
-        return 0;
-    #ifdef OPEN_INSTALLER 
+        return FIRM_B9S;
     } else if (CheckFastBoot3DS(firm) == 0) {
-        if (result) snprintf(result, 32, "fastboot3ds firm");
-        return 0;
-    #endif
-    }
-    if (result) snprintf(result, 32, "unknown firm");
-    return 1;
+        return FIRM_FB3DS;
+    } else return FIRM_UNK;
 }

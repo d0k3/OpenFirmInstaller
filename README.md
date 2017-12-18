@@ -1,4 +1,4 @@
-# SafeB9SInstaller
+# OpenFirmInstaller
 Safe, simple, user-friendly installer for sighaxed FIRMs
 
 For usage instructions, refer to [Plailect's guide](https://3ds.guide/).

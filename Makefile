@@ -16,7 +16,7 @@ include $(DEVKITARM)/ds_rules
 # INCLUDES is a list of directories containing header files
 # SPECS is the directory containing the important build and link files
 #---------------------------------------------------------------------------------
-export TARGET	:=	SafeB9SInstaller
+export TARGET	:=	OpenFirmInstaller
 BUILD		:=	build
 SOURCES		:=	source source/common source/fs source/crypto source/fatfs source/nand source/safety
 DATA		:=	data
@@ -45,10 +45,6 @@ else ifeq ($(FONT),GB)
 CFLAGS	+=	-DFONT_GB
 else
 CFLAGS	+=	-DFONT_6X10
-endif
-
-ifeq ($(OPEN),1)
-	CFLAGS += -DOPEN_INSTALLER
 endif
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
@@ -184,7 +180,7 @@ clean:
 	@-make clean --no-print-directory -C BrahmaLoader
 	@echo clean 2xrsa...
 	@-make clean --no-print-directory -C 2xrsa
-	@echo clean SafeB9SInstaller...
+	@echo clean OpenFirmInstaller...
 	@rm -fr $(BUILD) $(OUTPUT_D) $(RELEASE)
 
 

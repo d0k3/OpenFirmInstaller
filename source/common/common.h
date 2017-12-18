@@ -37,29 +37,20 @@
 #define align(v,a) \
     (((v) % (a)) ? ((v) + (a) - ((v) % (a))) : (v))
 
-// SafeB9SInstaller version
-#define VERSION     "0.0.7"
+// OpenFirmInstaller version
+#define VERSION     "0.0.8"
 
-// name of the FIRM to install (also name of the input path)
-#ifndef OPEN_INSTALLER
-#define NAME_FIRM   "boot9strap"
-#else
-#define NAME_FIRM   "sighax"
-#endif
+// names of the installable FIRMs
+#define NAME_B9S    "boot9strap"
+#define NAME_FB3DS  "fastboot3ds"
 
 // input / output paths
-#define INPUT_PATH  "0:/" NAME_FIRM
+#define INPUT_PATH  "0:/" "OFI"
 
 // cosmetic stuff (for installer status)
-#ifndef OPEN_INSTALLER
-#define APP_TITLE   "SafeB9SInstaller" " v" VERSION
-#define APP_URL     "https://github.com/d0k3/SafeB9SInstaller"
-#define APP_USAGE   "Usage instructions: https://%s3ds.guide/", IS_DEVKIT ? "dev." : ""
-#else
 #define APP_TITLE   "OpenFirmInstaller" " v" VERSION
-#define APP_URL     "https://github.com/d0k3/SafeB9SInstaller"
+#define APP_URL     "https://gitlab.com/d0k3/OpenFirmInstaller"
 #define APP_USAGE   "Based on SafeB9SInstaller by d0k3"
-#endif
 
 // buffer area defines (big buffer for firm)
 #define WORK_BUFFER         ((u8*) 0x21000000)
@@ -69,7 +60,7 @@
 #define NAND_BUFFER         ((u8*) 0x21800000)
 #define NAND_BUFFER_SIZE    (0x100000)
 
-// testfing flags, only useful to devs
+// testing flags, only useful to devs
 // #define NO_WRITE     // disables all NAND writes, just for testing
 // #define FAIL_TEST    // to test the emergency screen, only works with NO_TRANSFER defined
 

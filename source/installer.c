@@ -11,8 +11,9 @@
 
 #define MIN_SD_FREE (16 * 1024 * 1024) // 16MB
 
-#define NAME_SIGHAXFIRM     (IS_DEVKIT ? INPUT_PATH "/" NAME_FIRM "_dev.firm" : INPUT_PATH "/" NAME_FIRM ".firm")
-#define NAME_SIGHAXFIRMSHA  (IS_DEVKIT ? INPUT_PATH "/" NAME_FIRM "_dev.firm.sha" : INPUT_PATH "/" NAME_FIRM ".firm.sha")
+#define NAME_FB3DSFIRM      INPUT_PATH "/" NAME_FB3DS ".firm"
+#define NAME_B9SFIRM        (IS_DEVKIT ? INPUT_PATH "/" NAME_B9S "_dev.firm" : INPUT_PATH "/" NAME_B9S ".firm")
+#define NAME_B9SFIRMSHA     (IS_DEVKIT ? INPUT_PATH "/" NAME_B9S "_dev.firm.sha" : INPUT_PATH "/" NAME_B9S ".firm.sha")
 #define NAME_SECTOR0x96     (IS_DEVKIT ? INPUT_PATH "/secret_sector_dev.bin" : INPUT_PATH "/secret_sector.bin")
 #define NAME_FIRMBACKUP     INPUT_PATH "/firm%lu_enc.bak"
 #define NAME_SECTORBACKUP   INPUT_PATH "/sector0x96_enc.bak"
@@ -46,7 +47,7 @@ u32 ShowInstallerStatus(void) {
     const u32 pos_y0 = pos_yb + 50;
     const u32 stp = 14;
     
-    // DrawStringF(BOT_SCREEN, pos_xb, pos_yb, COLOR_STD_FONT, COLOR_STD_BG, "SafeB9SInstaller v" VERSION "\n" "-----------------------" "\n" "https://github.com/d0k3/SafeB9SInstaller");
+    // DrawStringF(BOT_SCREEN, pos_xb, pos_yb, COLOR_STD_FONT, COLOR_STD_BG, "OpenFirmInstaller v" VERSION "\n" "-----------------------" "\n" "https://github.com/d0k3/OpenFirmInstaller");
     DrawStringF(BOT_SCREEN, pos_xb, pos_yb, COLOR_STD_FONT, COLOR_STD_BG, APP_TITLE "\n" "%.*s" "\n" APP_URL,
         strnlen(APP_TITLE, 32), "--------------------------------");
     
@@ -70,7 +71,7 @@ u32 ShowInstallerStatus(void) {
     return 0;
 }
 
-u32 SafeB9SInstaller(void) {
+u32 OpenFirmInstaller(void) {
     UINT bt;
     u32 ret = 0;
     
@@ -108,39 +109,50 @@ u32 SafeB9SInstaller(void) {
     snprintf(msgFirm, 64, "checking...");
     statusFirm = STATUS_YELLOW;
     ShowInstallerStatus();
-    u8 firm_sha[0x20];
+    u32 firm_id;
     UINT firm_size;
-    bool unknown_payload = false;
-    if ((f_qread(NAME_SIGHAXFIRM, FIRM_BUFFER, 0, FIRM_BUFFER_SIZE, &firm_size) != FR_OK) ||
+    
+    if (((f_qread(NAME_FB3DSFIRM, FIRM_BUFFER, 0, FIRM_BUFFER_SIZE, &firm_size) != FR_OK) &&
+         (f_qread(NAME_B9SFIRM, FIRM_BUFFER, 0, FIRM_BUFFER_SIZE, &firm_size) != FR_OK)) ||
         (firm_size < 0x200)) {
         snprintf(msgFirm, 64, "file not found");
         statusFirm = STATUS_RED;
         return 1;
     }
-    if ((f_qread(NAME_SIGHAXFIRMSHA, firm_sha, 0, 0x20, &bt) != FR_OK) || (bt != 0x20)) {
-        snprintf(msgFirm, 64, ".sha file not found");
+    
+    firm_id = CheckFirmPayload(FIRM_BUFFER);
+    if (firm_id == FIRM_FB3DS) {
+        if (ValidateFirm(FIRM_BUFFER, NULL, firm_size, NULL) != 0) {
+            snprintf(msgFirm, 64, "invalid FIRM");
+            statusFirm = STATUS_RED;
+            return 1;
+        }
+        snprintf(msgFirm, 64, "fastboot3ds firm");
+    } else if (firm_id == FIRM_B9S) {
+        u8 firm_sha[0x20];
+        snprintf(msgFirm, 64, "boot9strap firm");
+        if ((f_qread(NAME_B9SFIRMSHA, firm_sha, 0, 0x20, &bt) != FR_OK) || (bt != 0x20)) {
+            snprintf(msgFirm, 64, ".sha file not found");
+            statusFirm = STATUS_RED;
+            return 1;
+        }
+        if (CheckFirmSigHax(FIRM_BUFFER) != 0) {
+            snprintf(msgFirm, 64, "not sighaxed");
+            statusFirm = STATUS_RED;
+            return 1;
+        }
+        if (ValidateFirm(FIRM_BUFFER, firm_sha, firm_size, NULL) != 0) {
+            snprintf(msgFirm, 64, "invalid FIRM");
+            statusFirm = STATUS_RED;
+            return 1;
+        }
+    } else {
+        snprintf(msgFirm, 64, "unknown firm");
         statusFirm = STATUS_RED;
         return 1;
     }
-    if (ValidateFirm(FIRM_BUFFER, firm_sha, firm_size, NULL) != 0) {
-        snprintf(msgFirm, 64, "invalid FIRM");
-        statusFirm = STATUS_RED;
-        return 1;
-    }
-    if (CheckFirmSigHax(FIRM_BUFFER) != 0) {
-        snprintf(msgFirm, 64, "not sighaxed");
-        statusFirm = STATUS_RED;
-        return 1;
-    }
-    if (CheckFirmPayload(FIRM_BUFFER, msgFirm) != 0) {
-        #ifndef OPEN_INSTALLER
-        statusFirm = STATUS_RED;
-        return 1;
-        #else
-        unknown_payload = true;
-        #endif
-    }
-    statusFirm = unknown_payload ? STATUS_YELLOW : STATUS_GREEN;
+    
+    statusFirm = STATUS_GREEN;
     ShowInstallerStatus();
     // provided FIRM is okay!
     
@@ -202,8 +214,7 @@ u32 SafeB9SInstaller(void) {
     
     
     // step #X - point of no return
-    if (!ShowUnlockSequence(unknown_payload ? 6 : 1, unknown_payload ? 
-        "!!! FIRM NOT RECOGNIZED !!!\nProceeding may lead to a BRICK!\n \nTo proceed, enter the sequence\nbelow or press B to cancel." :
+    if (!ShowUnlockSequence(1,
         "All input files verified.\n \nTo install FIRM, enter the sequence\nbelow or press B to cancel.")) {
         snprintf(msgBackup, 64, "cancelled by user");
         snprintf(msgInstall, 64, "cancelled by user");
