@@ -23,57 +23,6 @@
 
 
 //////////////////////////////////
-//             SHA              //
-//////////////////////////////////
-
-#define SHA_ENABLE         (1u) // Also used as busy flag
-#define SHA_PAD_INPUT      (1u<<1)
-#define SHA_INPUT_BIG      (1u<<3)
-#define SHA_INPUT_LITTLE   (0u)
-#define SHA_OUTPUT_BIG     (SHA_INPUT_BIG)
-#define SHA_OUTPUT_LITTLE  (SHA_INPUT_LITTLE)
-#define SHA_MODE_256       (0u)
-#define SHA_MODE_224       (1u<<4)
-#define SHA_MODE_1         (2u<<4)
-
-
-/**
- * @brief      Sets input mode, endianess and starts the hash operation.
- *
- * @param[in]  params  Mode and input endianess bitmask.
- */
-void SHA_start(u8 params);
-
-/**
- * @brief      Hashes the data pointed to.
- *
- * @param[in]  data  Pointer to data to hash.
- * @param[in]  size  Size of the data to hash.
- */
-void SHA_update(const u32 *data, u32 size);
-
-/**
- * @brief      Generates the final hash.
- *
- * @param      hash       Pointer to memory to copy the hash to.
- * @param[in]  endianess  Endianess bitmask for the hash.
- */
-void SHA_finish(u32 *const hash, u8 endianess);
-
-/**
- * @brief      Hashes a single block of data and outputs the hash.
- *
- * @param[in]  data           Pointer to data to hash.
- * @param[in]  size           Size of the data to hash.
- * @param      hash           Pointer to memory to copy the hash to.
- * @param[in]  params         Mode and input endianess bitmask.
- * @param[in]  hashEndianess  Endianess bitmask for the hash.
- */
-void sha(const u32 *data, u32 size, u32 *const hash, u8 params, u8 hashEndianess);
-
-
-
-//////////////////////////////////
 //             RSA              //
 //////////////////////////////////
 

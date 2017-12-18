@@ -18,74 +18,7 @@
 
 #include "common.h"
 #include "rsa.h"
-
-
-
-//////////////////////////////////
-//             SHA              //
-//////////////////////////////////
-
-#define SHA_REGS_BASE   (0x10000000 + 0xA000)
-#define REG_SHA_CNT     *((vu32*)(SHA_REGS_BASE + 0x00))
-#define REG_SHA_BLKCNT  *((vu32*)(SHA_REGS_BASE + 0x04))
-#define REG_SHA_HASH     ((u32* )(SHA_REGS_BASE + 0x40))
-#define REG_SHA_INFIFO   (       (SHA_REGS_BASE + 0x80))
-
-
-void SHA_start(u8 params)
-{
-	REG_SHA_CNT = (u32)params | SHA_ENABLE;
-}
-
-void SHA_update(const u32 *data, u32 size)
-{
-	while(size >= 0x40)
-	{
-		for(u32 i = 0; i < 4; i++)
-		{
-			((vu32*)REG_SHA_INFIFO)[0 + i] = *data++;
-			((vu32*)REG_SHA_INFIFO)[1 + i] = *data++;
-			((vu32*)REG_SHA_INFIFO)[2 + i] = *data++;
-			((vu32*)REG_SHA_INFIFO)[3 + i] = *data++;
-		}
-		while(REG_SHA_CNT & SHA_ENABLE);
-
-		size -= 0x40;
-	}
-
-	if(size) memcpy((void*)REG_SHA_INFIFO, data, size);
-}
-
-void SHA_finish(u32 *const hash, u8 endianess)
-{
-	REG_SHA_CNT = (REG_SHA_CNT & (SHA_MODE_1 | SHA_MODE_224 | SHA_MODE_256)) | (u32)endianess | SHA_PAD_INPUT;
-	while(REG_SHA_CNT & SHA_ENABLE);
-
-	u32 hashSize;
-	switch(REG_SHA_CNT & (SHA_MODE_1 | SHA_MODE_224 | SHA_MODE_256))
-	{
-		case SHA_MODE_256:
-			hashSize = 8; // 32;
-			break;
-		case SHA_MODE_224:
-			hashSize = 7; // 28;
-			break;
-		case SHA_MODE_1:
-			hashSize = 5; // 20;
-			break;
-		default:
-			return;
-	}
-
-	for(u32 i = 0; i < hashSize; i++) hash[i] = REG_SHA_HASH[i];
-}
-
-void sha(const u32 *data, u32 size, u32 *const hash, u8 params, u8 hashEndianess)
-{
-	SHA_start(params);
-	SHA_update(data, size);
-	SHA_finish(hash, hashEndianess);
-}
+#include "sha.h"
 
 
 
@@ -182,19 +115,5 @@ bool RSA_verify2048(const u32 *const encSig, const u32 *const data, u32 size)
 	// ASN.1 is a clusterfuck so we skip parsing the remaining headers
 	// and hardcode the hash location.
 
-	u8 __attribute__((aligned(4))) hash[32];
-	sha(data, size, (u32*)(void*)hash, SHA_INPUT_BIG | SHA_MODE_256, SHA_OUTPUT_BIG);
-
-	// Compare hash
-	u8 res = 0;
-	for(u32 i = 0; i < 32; i++)
-	{
-		u8 tmp;
-		if(decSig[0xE0 + i] == hash[i]) tmp = 0;
-		else tmp = 1;
-
-		res |= tmp;
-	}
-
-	return res == 0;
+	return sha_cmp(&(decSig[0xE0]), data, size, SHA256_MODE) == 0;
 }
