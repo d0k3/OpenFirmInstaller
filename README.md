@@ -16,5 +16,5 @@ OpenFirmInstaller is based on [SafeB9SInstaller](https://github.com/d0k3/SafeB9S
 * **profi200** and **derrek** for enabling compatibility with fastboot3DS
 * The fine folks on **freenode #Cakey**
 * All **[3dbrew.org](https://www.3dbrew.org/wiki/Main_Page) editors**
-* Everyone who helped test this, especially **Al3x_10m**, **Wolfvak**, **ShadowHand**, **Lilith Valentine** and **Crimson**
+* Everyone who helped test this, especially **Al3x_10m**, **Wolfvak**, **Shadowhand**, **Lilith Valentine** and **Crimson**
 * Everyone I possibly forgot, if you think you deserve to be mentioned, just contact me!
