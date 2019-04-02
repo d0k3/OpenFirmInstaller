@@ -1,6 +1,7 @@
 #include "installer.h"
 #include "safewrite.h"
 #include "validator.h"
+#include "fb3dscfg.h"
 #include "unittype.h"
 #include "nand.h"
 #include "ui.h"
@@ -306,6 +307,7 @@ u32 OpenFirmInstaller(void) {
         }
     } while (false);
     if (ret == 0) {
+        if (firm_id == FIRM_FB3DS) PresetFastBoot3dsConfig(); // silent fb3ds preconfig
         snprintf(msgInstall, 64, "install success!");
         statusInstall = STATUS_GREEN;
         return 0;
