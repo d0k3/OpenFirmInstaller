@@ -3,6 +3,8 @@ Safe, simple, user-friendly installer for sighax bootloaders
 
 OpenFirmInstaller is based on [SafeB9SInstaller](https://github.com/d0k3/SafeB9SInstaller) and works the same way as that. All input files go into `sdmc:/ofi`. At the present time, only [boot9strap](https://github.com/SciresM/boot9strap) and [fastboot3DS](https://github.com/derrekr/fastboot3DS) are supported as input files.
 
+Note to developers: Building this requires [firmtool](https://github.com/TuxSH/firmtool), [Python 3.5+](https://www.python.org/downloads/) and [devkitARM](https://sourceforge.net/projects/devkitpro/). To compile the CakesROP entrypoint you also need `xxd` from the `vim` package installed (install it via `pacman -S vim`).
+
 ## Credits
 * **Normmatt**, for sdmmc.c / sdmmc.h
 * **Cha(N)**, **Kane49**, and all other FatFS contributors for FatFS
