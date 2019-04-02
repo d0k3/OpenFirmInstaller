@@ -49,7 +49,7 @@
 
 // cosmetic stuff (for installer status)
 #define APP_TITLE   "OpenFirmInstaller" " v" VERSION
-#define APP_URL     "https://gitlab.com/d0k3/OpenFirmInstaller"
+#define APP_URL     "https://github.com/d0k3/OpenFirmInstaller"
 #define APP_USAGE   "Based on SafeB9SInstaller by d0k3"
 
 // buffer area defines (big buffer for firm)
