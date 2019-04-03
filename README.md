@@ -10,8 +10,8 @@ For this, we are assuming you already have boot9strap and CFW installed, your 3D
 1. Create a folder called `ofi` on your 3DS SD card. 
 2. Download [fastboot3DS](https://github.com/derrekr/fastboot3DS/releases) and copy `fastboot3ds.firm` from the ZIP file to `ofi/fastboot3ds.firm` on your SD card.
 3. [optional] Get [GodMode9](https://github.com/d0k3/GodMode9/releases) and copy `GodMode9.firm` to `gm9/payloads/GodMode9.firm` on your SD card. If you are a [Luma 3DS](https://github.com/AuroraWright/Luma3DS) user, move `GodMode9.firm` from `luma/payloads/GodMode9.firm` to `gm9/payloads/GodMode9.firm`.
-4. Copy `OpenFirmInstaller.firm` from the [release ZIP](https://github.com/d0k3/OpenFirmInstaller/releases) to your SD card. If you are a Luma 3DS user, the file goes to `luma/payloads/OpenFirmInstaller.firm` when prompted.
-5. Run `OpenFirmInstaller.firm` from your SD card. For a Luma 3DS user, thats as simple as holding `START` when booting the console and selecting `OpenFirmInstaller.firm`. You may also run `OpenFirmInstaller.firm` from GodMode9 (via [A] -> `FIRM options...` -> `Boot FIRM`).
+4. Copy `OpenFirmInstaller.firm` from the [release ZIP](https://github.com/d0k3/OpenFirmInstaller/releases) to your SD card. If you are a Luma 3DS user, the file goes to `luma/payloads/OpenFirmInstaller.firm`.
+5. Run `OpenFirmInstaller.firm` from your SD card. For a Luma 3DS user, thats as simple as holding `START` when booting the console and selecting `OpenFirmInstaller.firm`  when (if) prompted. You may also run `OpenFirmInstaller.firm` from GodMode9 (via [A] -> `FIRM options...` -> `Boot FIRM`).
 6. Follow the on screen instructions. When you're asked to input a key sequence to confirm, input the key sequence.
 7. Done, now fastboot3DS is your bootloader. Further configuration is not required. Your CFW is autobooted as you are used to, and if - you installed it - GodMode9 is booted when you hold START after turning on your console.
 
