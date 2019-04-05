@@ -29,7 +29,7 @@ ARCH	:=	-mthumb -mthumb-interwork
 
 CFLAGS	:=	-g -Wall -Wextra -Wpedantic -Wcast-align -Wno-main -O2\
 			-march=armv5te -mtune=arm946e-s -fomit-frame-pointer -ffast-math -std=gnu11\
-			-fno-builtin-memcpy $(ARCH)
+			-fno-builtin-memcpy $(ARCH) -fdata-sections -ffunction-sections
 
 CFLAGS	+=	$(INCLUDE) -DARM9
 
@@ -50,7 +50,7 @@ endif
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
 ASFLAGS	:=	-g -mcpu=arm946e-s $(ARCH)
-LDFLAGS	=	-T../link.ld -nostartfiles -g $(ARCH) -Wl,-Map,$(TARGET).map
+LDFLAGS	=	-T../link.ld -nostartfiles -g $(ARCH) -Wl,--gc-sections,-Map,$(TARGET).map
 
 LIBS	:=
 
