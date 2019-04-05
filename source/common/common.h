@@ -38,7 +38,7 @@
     (((v) % (a)) ? ((v) + (a) - ((v) % (a))) : (v))
 
 // OpenFirmInstaller version
-#define VERSION     "0.0.8"
+#define VERSION     "0.0.9"
 
 // names of the installable FIRMs
 #define NAME_B9S    "boot9strap"
